@@ -1,6 +1,5 @@
 # kits
-This is a kit box
-
+This is a kit box pattern.
 
 ## Spec
 ```javascript
