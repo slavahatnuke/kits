@@ -136,5 +136,17 @@ describe('Kit', () => {
         assert.equal(kit.Component, 'value');
     });
 
+    it('decorate - wrapper', () => {
+
+        let kit = Kit({
+            Component: () => 'component'
+        });
+
+        kit.decorate((value, name) => `${value} -> ${name}`);
+
+        assert.equal(kit.Component, 'component -> Component');
+    })
+
+
 });
 ```

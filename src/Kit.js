@@ -2,7 +2,8 @@ module.exports = class Kit {
     constructor(creators = {}) {
         this.__kit = {
             creators: {},
-            values: {}
+            values: {},
+            decorator: (value, name) => value
         };
 
         for (let creator in creators) {
@@ -43,7 +44,8 @@ module.exports = class Kit {
 
     create(name) {
         if (this.__kit.creators[name]) {
-            return this.__kit.creators[name](this);
+            let value = this.__kit.creators[name](this);
+            return this.__kit.decorator(value, name);
         }
 
         return undefined;
@@ -52,6 +54,12 @@ module.exports = class Kit {
     remove(name) {
         if (this.__kit.values[name] !== undefined) {
             delete this.__kit.values[name];
+        }
+    }
+
+    decorate(decorator) {
+        if(decorator instanceof Function) {
+            this.__kit.decorator = (value, name) => decorator(value, name);
         }
     }
 };
