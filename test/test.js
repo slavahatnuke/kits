@@ -117,4 +117,18 @@ describe('Kit', () => {
         assert.equal(kit.Component, 'value');
     });
 
+    it('set - is alias for add', () => {
+
+        let kit = Kit();
+
+        class TestComponent {
+        }
+
+        kit.set('Component', () => new TestComponent());
+        assert(kit.Component instanceof TestComponent);
+
+        kit.set('Component', () => 'value');
+        assert.equal(kit.Component, 'value');
+    });
+
 });

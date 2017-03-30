@@ -11,6 +11,10 @@ module.exports = class Kit {
 
     }
 
+    set(name, creator) {
+        return this.add(name, creator);
+    }
+
     add(name, creator) {
         if (creator instanceof Function) {
             this.remove(name);
