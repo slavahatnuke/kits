@@ -15,6 +15,16 @@ describe('Kit', () => {
         assert.equal(kit.get('NoComponent'), undefined);
     })
 
+    it('get - array of arguments', () => {
+
+        let kit = Kit({
+            Component1: () => 'component1',
+            Component2: () => 'component2'
+        });
+
+        assert.deepEqual(kit.get(['Component1', 'Component2']), ['component1', 'component2']);
+    })
+
     it('add - adds creator', () => {
 
         let kit = Kit();

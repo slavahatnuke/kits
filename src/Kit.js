@@ -35,11 +35,17 @@ module.exports = class Kit {
     }
 
     get(name) {
-        if (this.__kit.values[name] === undefined) {
-            this.__kit.values[name] = this.create(name);
-        }
+        return (() => {
+            if(Array.isArray(name)) {
+                return name.map((name) => this.get(name));
+            }
 
-        return this.__kit.values[name];
+            if (this.__kit.values[name] === undefined) {
+                this.__kit.values[name] = this.create(name);
+            }
+
+            return this.__kit.values[name];
+        })();
     }
 
     create(name) {
