@@ -1,6 +1,6 @@
 {
   "name": "kits",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "kits",
   "main": "index.js",
   "bin": {
