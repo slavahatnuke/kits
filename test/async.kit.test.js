@@ -173,10 +173,32 @@ describe('Async Kit', () => {
     //         Component: () => 'component'
     //     });
     //
-    //     kit.decorate((value, name) => `${value} -> ${name}`);
+    //     kit.defineDecorator((value, name) => `${value} -> ${name}`);
     //
     //     assert.equal(kit.Component, 'component -> Component');
     // })
     //
 
+    it('clone', () => {
+
+        class TestComponent {
+        }
+
+        let kit = Kit({
+            Component: () => new TestComponent()
+        });
+
+        let kit2 = Kit(kit);
+
+        return Promise.resolve()
+            .then(() => {
+                return Promise.all([kit.Component, kit2.Component])
+                    .then(([c1, c2]) => {
+                        assert(c1 instanceof TestComponent);
+                        assert(c2 instanceof TestComponent);
+
+                        assert.notEqual(c1, c2);
+                    });
+            });
+    })
 });

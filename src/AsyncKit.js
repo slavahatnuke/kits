@@ -1,41 +1,30 @@
-module.exports = class AsyncKit {
+let AbstractKit = require('./AbstractKit');
+
+module.exports = class AsyncKit extends AbstractKit {
     constructor(creators = {}) {
-        this.__kit = {
-            creators: {},
-            values: {},
-            promises: {},
-            decorator: (value, name) => value
-        };
+        super(creators);
 
-        for (let creator in creators) {
-            this.add(creator, creators[creator]);
-        }
-
-    }
-
-    set(name, creator) {
-        return this.add(name, creator);
+        this.__kit = Object.assign(this.__kit, {
+            promises: {}
+        });
     }
 
     add(name, creator) {
-        return Promise.resolve()
-            .then(() => {
-                if (creator instanceof Function) {
-                    this.remove(name);
+        if (creator instanceof Function) {
+            this.remove(name);
 
-                    if (!this.__kit.creators[name]) {
-                        Object.defineProperty(this, name, {
-                            get: () => this.get(name)
-                        });
-                    }
+            if (this.__kit.creators[name] === undefined) {
+                Object.defineProperty(this, name, {
+                    get: () => this.get(name)
+                });
+            }
 
-                    this.__kit.creators[name] = creator;
-                } else {
-                    throw new Error(`'${name}' : creator is not a function`)
-                }
+            this.__kit.creators[name] = creator;
+        } else {
+            throw new Error(`'${name}' : creator is not a function`)
+        }
 
-                return this;
-            });
+        return this;
     }
 
     get(name) {
@@ -81,33 +70,33 @@ module.exports = class AsyncKit {
     }
 
     create(name) {
-        return Promise.resolve()
-            .then(() => {
-                if (this.__kit.creators[name]) {
-                    return Promise.resolve()
-                        .then(() => this.__kit.values[name] || this.__kit.creators[name](this))
-                        .then((value) => this.__kit.decorator(value, name));
-                }
+        return (() => {
+            return Promise.resolve()
+                .then(() => {
+                    if (this.__kit.creators[name]) {
+                        return Promise.resolve()
+                            .then(() => this.__kit.values[name] || this.__kit.creators[name](this))
+                            .then((value) => this.__kit.decorator(value, name));
+                    }
 
-                return undefined;
-            });
+                    return undefined;
+                });
+        })();
     }
 
     remove(name) {
-        return Promise.resolve()
-            .then(() => {
-                if (this.__kit.values[name] !== undefined) {
-                    delete this.__kit.values[name];
-                }
-            });
+        if (this.__kit.values[name] !== undefined) {
+            delete this.__kit.values[name];
+        }
+
+        if (this.__kit.creators[name]) {
+            this.__kit.creators[name] = null;
+        }
     }
 
-    decorate(decorator) {
-        return Promise.resolve()
-            .then(() => {
-                if (decorator instanceof Function) {
-                    this.__kit.decorator = (value, name) => decorator(value, name);
-                }
-            });
+    defineDecorator(decorator) {
+        if (decorator instanceof Function) {
+            this.__kit.decorator = (value, name) => decorator(value, name);
+        }
     }
 };
