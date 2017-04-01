@@ -28,45 +28,53 @@ module.exports = class AsyncKit extends AbstractKit {
     }
 
     get(name) {
-        return (() => {
-            if (Array.isArray(name)) {
-                return Promise.all(name.map((name) => this.get(name)));
-            }
+        if (Array.isArray(name)) {
+            return Promise.all(name.map((name) => this.get(name)));
+        }
 
-            // if (this.__kit.promises[name] !== undefined) {
-            //     return this.__kit.promises[name];
-            // }
+        if (this.__kit.promises[name]) {
+            return this.__kit.promises[name];
+        }
 
-            this.__kit.promises[name] = Promise.resolve();
+        let resolver = (value) => value;
+        let rejecter = (err) => Promise.reject(err);
 
-            return this.__kit.promises[name]
-                .then(() => {
-                    if (this.__kit.values[name] === undefined) {
+        let promise = new Promise((resolve, reject) => {
+            resolver = resolve;
+            rejecter = reject;
+        });
 
-                        return this.__kit.promises[name]
-                            .then(() => this.create(name))
-                            .then((value) => {
-                                this.__kit.values[name] = value;
-                                return value;
-                            })
-                    }
+        this.__kit.promises[name] = promise;
 
-                    return this.__kit.values[name];
-                })
-                .then((value) => {
-                    if (this.__kit.promises[name]) {
-                        delete this.__kit.promises[name];
-                    }
-                    return value;
-                })
-                .catch((error) => {
-                    if (this.__kit.promises[name]) {
-                        delete this.__kit.promises[name];
-                    }
-                    return Promise.reject(error);
-                });
+        Promise.resolve()
+            .then(() => {
+                if (this.__kit.values[name] === undefined) {
 
-        })();
+                    return this.create(name)
+                        .then((value) => {
+                            this.__kit.values[name] = value;
+                            return value;
+                        });
+                }
+
+                return this.__kit.values[name];
+            })
+            .then((value) => {
+                if (this.__kit.promises[name]) {
+                    delete this.__kit.promises[name];
+                }
+                return value;
+            })
+            .catch((error) => {
+                if (this.__kit.promises[name]) {
+                    delete this.__kit.promises[name];
+                }
+                return Promise.reject(error);
+            })
+            .then(resolver)
+            .catch(rejecter);
+
+        return promise;
     }
 
     create(name) {
@@ -75,7 +83,7 @@ module.exports = class AsyncKit extends AbstractKit {
                 .then(() => {
                     if (this.__kit.creators[name]) {
                         return Promise.resolve()
-                            .then(() => this.__kit.values[name] || this.__kit.creators[name](this))
+                            .then(() => this.__kit.creators[name](this))
                             .then((value) => this.__kit.decorator(value, name));
                     }
 

@@ -13,6 +13,13 @@ module.exports = class AbstractKit {
         for (let creator in creators) {
             this.add(creator, creators[creator]);
         }
+
+        this.set = this.set.bind(this);
+        this.add = this.add.bind(this);
+        this.get = this.get.bind(this);
+        this.create = this.create.bind(this);
+        this.remove = this.remove.bind(this);
+        this.defineDecorator = this.defineDecorator.bind(this);
     }
 
     set(name, creator) {
