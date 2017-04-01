@@ -1,5 +1,16 @@
 # kits
-This is a kit box pattern.
+This is a kits pattern. Main idea of this to have registry and lightweight injections. 
+
+Main idea is:
+```javascript
+	let kit = Kit({
+	    name: () => 'slava',
+	    user: ({name}) => `My name is ${name}`
+	});
+	// console.log(kit.user) // My name is slava
+	
+	assert(kit.user === 'My name is slava');
+```
 
 ## Spec
 ```javascript
@@ -7,6 +18,16 @@ const assert = require('assert');
 const Kit = require('kits');
 
 describe('Kit', () => {
+    it('example', () => {
+        let kit = Kit({
+            name: () => 'slava',
+            user: ({name}) => `My name is ${name}`
+        });
+        // console.log(kit.user) // My name is slava
+
+        assert(kit.user === 'My name is slava');
+    });
+
     it('construct and get', () => {
 
         let kit = Kit({
@@ -181,9 +202,22 @@ describe('Kit', () => {
         assert.notEqual(kit.Component, kit2.Component);
     })
 
+    it('es6 nested access', () => {
+        let kit = Kit({
+            user: () => {
+                return {
+                    name: 'slava'
+                };
+            },
+            name: ({user: {name}}) => name
+        });
+
+        assert.equal(kit.name, 'slava');
+    })
 
 });
 ```
+
 
 ## Async Spec
 ```javascript

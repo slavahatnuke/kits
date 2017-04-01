@@ -2,6 +2,16 @@ const assert = require('assert');
 const Kit = require('..');
 
 describe('Kit', () => {
+    it('example', () => {
+        let kit = Kit({
+            name: () => 'slava',
+            user: ({name}) => `My name is ${name}`
+        });
+        // console.log(kit.user) // My name is slava
+
+        assert(kit.user === 'My name is slava');
+    });
+
     it('construct and get', () => {
 
         let kit = Kit({
@@ -176,5 +186,17 @@ describe('Kit', () => {
         assert.notEqual(kit.Component, kit2.Component);
     })
 
+    it('es6 nested access', () => {
+        let kit = Kit({
+            user: () => {
+                return {
+                    name: 'slava'
+                };
+            },
+            name: ({user: {name}}) => name
+        });
+
+        assert.equal(kit.name, 'slava');
+    })
 
 });
