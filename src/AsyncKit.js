@@ -1,12 +1,30 @@
-let AbstractKit = require('./AbstractKit');
-
-module.exports = class AsyncKit extends AbstractKit {
+module.exports = class AsyncKit {
     constructor(creators = {}) {
-        super(creators);
+        this.__kit = {
+            creators: {},
+            values: {},
+            promises: {},
+            decorator: (value, name) => value
+        };
 
-        this.__kit = Object.assign(this.__kit, {
-            promises: {}
-        });
+        if (creators instanceof AsyncKit) {
+            creators = creators.__kit.creators;
+        }
+
+        for (let creator in creators) {
+            this.add(creator, creators[creator]);
+        }
+
+        this.set = this.set.bind(this);
+        this.add = this.add.bind(this);
+        this.get = this.get.bind(this);
+        this.create = this.create.bind(this);
+        this.remove = this.remove.bind(this);
+        this.defineDecorator = this.defineDecorator.bind(this);
+    }
+
+    set(name, creator) {
+        return this.add(name, creator);
     }
 
     add(name, creator) {

@@ -1,6 +1,31 @@
-let AbstractKit = require('./AbstractKit');
+module.exports = class Kit {
+    constructor(creators = {}) {
+        this.__kit = {
+            creators: {},
+            values: {},
+            decorator: (value, name) => value
+        };
 
-module.exports = class Kit extends AbstractKit {
+        if (creators instanceof Kit) {
+            creators = creators.__kit.creators;
+        }
+
+        for (let creator in creators) {
+            this.add(creator, creators[creator]);
+        }
+
+        this.set = this.set.bind(this);
+        this.add = this.add.bind(this);
+        this.get = this.get.bind(this);
+        this.create = this.create.bind(this);
+        this.remove = this.remove.bind(this);
+        this.defineDecorator = this.defineDecorator.bind(this);
+    }
+
+    set(name, creator) {
+        return this.add(name, creator);
+    }
+
     add(name, creator) {
         if (creator instanceof Function) {
             this.remove(name);
@@ -21,7 +46,7 @@ module.exports = class Kit extends AbstractKit {
 
     get(name) {
         return (() => {
-            if(Array.isArray(name)) {
+            if (Array.isArray(name)) {
                 return name.map((name) => this.get(name));
             }
 
@@ -55,7 +80,7 @@ module.exports = class Kit extends AbstractKit {
     }
 
     defineDecorator(decorator) {
-        if(decorator instanceof Function) {
+        if (decorator instanceof Function) {
             this.__kit.decorator = (value, name) => decorator(value, name);
         }
     }
