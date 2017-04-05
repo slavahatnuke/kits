@@ -1,11 +1,13 @@
 module.exports = class AsyncKit {
     constructor(creators = {}) {
-        this.__kit = {
-            creators: {},
-            values: {},
-            promises: {},
-            decorator: (value, name) => value
-        };
+        Object.defineProperty(this, '__kit', {
+            value: {
+                creators: {},
+                values: {},
+                promises: {},
+                decorator: (value, name) => value
+            }
+        });
 
         if (creators instanceof AsyncKit) {
             creators = creators.__kit.creators;
@@ -33,7 +35,8 @@ module.exports = class AsyncKit {
 
             if (this.__kit.creators[name] === undefined) {
                 Object.defineProperty(this, name, {
-                    get: () => this.get(name)
+                    get: () => this.get(name),
+                    enumerable: true
                 });
             }
 

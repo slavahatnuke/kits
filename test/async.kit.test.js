@@ -216,4 +216,23 @@ describe('Async Kit', () => {
                     });
             });
     })
+
+    it('keys', () => {
+        let kit = Kit({
+            User1: () => null,
+            Name1: () => 'OK'
+        });
+
+        assert.deepEqual(Object.keys(kit), [
+            'User1',
+            'Name1',
+            'set',
+            'add',
+            'get',
+            'create',
+            'remove',
+            'defineDecorator']
+        );
+    })
+
 });
