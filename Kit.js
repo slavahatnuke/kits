@@ -1,10 +1,12 @@
 module.exports = class Kit {
     constructor(creators = {}) {
-        this.__kit = {
-            creators: {},
-            values: {},
-            decorator: (value, name) => value
-        };
+        Object.defineProperty(this, '__kit', {
+            value: {
+                creators: {},
+                values: {},
+                decorator: (value, name) => value
+            }
+        });
 
         if (creators instanceof Kit) {
             creators = creators.__kit.creators;
@@ -32,7 +34,8 @@ module.exports = class Kit {
 
             if (this.__kit.creators[name] === undefined) {
                 Object.defineProperty(this, name, {
-                    get: () => this.get(name)
+                    get: () => this.get(name),
+                    enumerable: true
                 });
             }
 
@@ -45,28 +48,24 @@ module.exports = class Kit {
     }
 
     get(name) {
-        return (() => {
-            if (Array.isArray(name)) {
-                return name.map((name) => this.get(name));
-            }
+        if (Array.isArray(name)) {
+            return name.map((name) => this.get(name));
+        }
 
-            if (this.__kit.values[name] === undefined) {
-                this.__kit.values[name] = this.create(name);
-            }
+        if (this.__kit.values[name] === undefined) {
+            this.__kit.values[name] = this.create(name);
+        }
 
-            return this.__kit.values[name];
-        })();
+        return this.__kit.values[name];
     }
 
     create(name) {
-        return (() => {
-            if (this.__kit.creators[name]) {
-                let value = this.__kit.creators[name](this);
-                return this.__kit.decorator(value, name);
-            }
+        if (this.__kit.creators[name]) {
+            let value = this.__kit.creators[name](this);
+            return this.__kit.decorator(value, name);
+        }
 
-            return undefined;
-        })();
+        return undefined;
     }
 
     remove(name) {
