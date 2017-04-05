@@ -1,7 +1,7 @@
 # kits
 This is a kits pattern. Main idea of this to have registry and lightweight injections. 
 
-Main idea is:
+Idea is:
 ```javascript
 	let kit = Kit({
 	    name: () => 'slava',
