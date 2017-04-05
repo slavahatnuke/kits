@@ -12,6 +12,8 @@ Idea is:
 	assert(kit.user === 'My name is slava');
 ```
 
+FYI: Async kits here now: [https://www.npmjs.com/package/kits-promisify](https://www.npmjs.com/package/kits-promisify).
+
 ## Spec
 ```javascript
 const assert = require('assert');
