@@ -217,5 +217,13 @@ describe('Kit', () => {
         );
     })
 
+    it('add via object', () => {
+        let kit = Kit();
+
+        kit.add({name: () => 'slava'});
+
+        assert.equal(kit.name, 'slava')
+    })
+
 
 });
