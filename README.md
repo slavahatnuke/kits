@@ -219,3 +219,8 @@ describe('Kit', () => {
 
 });
 ```
+
+## ES5
+```javascript
+const Kit = require('kits/es5');
+```
